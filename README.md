@@ -13,8 +13,10 @@ One day I printed two reams of manpages (easier than flipping screens) and start
 Anyway, I keep the stack on my desk next to my Mac (yes, I can do anything from a Mac that I can also do from my Ubuntu server that's hung from the bottom of a shelf in my closet and reachable from anywhere via tailscale).  Daily I sit down for some number of hours and go through the stack, looking for possible improvements that I can add with intercept scripting.  I post them here when I'm sure they're sane and reliable.  I also give you any `.bashrc` mods that make them work.
 
 ## what am i hoping to gain from this?
-Well, initially, I couldn't even figure out what the heck I was doing and why I was doing it.  Something about not trying to be another smiling face trying to get attention, instead trying to do some good.  I've aged out of the system at 67 and been "voluntired."  Retirement + social security *almost* gets it, but not exactly the lifestyle I want for as long as I estimate I'll want it (all my relatives died in their 90's). Toys are expensive, and I still want them.
+Well, initially, I couldn't even figure out what the heck I was doing and why I was doing it.  Something about doing it because I freakin' wanted to do it.  I'm not trying to be another smiling face trying to get attention; instead, I'm trying to do some good.
 
-So I wouldn't mind getting a lesser-salary job to make up the gap, doing things that I've already been doing for five decades.  Kinda like getting senior-level experience for the price of a junior.  I'm gonna do it anyway, but I'd really like to get paid for it.  Please keep that in mind.
+But also, I've aged out of the system at 67 and kinda "voluntired."  Retirement + social security *almost* gets it, but not exactly the lifestyle I want for as long as I estimate I'll want it (all my relatives died in their 90's). Toys are expensive, and I still want them.
+
+So I wouldn't mind getting a lesser-salary job to make up the gap, doing things that I've already been doing for five decades.  Kinda like getting senior-level experience for the price of a junior.  I'm gonna do it anyway, but I'd like to get paid for it.  Please keep that in mind.
 
 
