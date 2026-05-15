@@ -15,7 +15,7 @@ Anyway, I keep the stack on my desk next to my Mac (yes, I can do anything from 
 ## what am i hoping to gain from this?
 Well, initially, I couldn't even figure out what the heck I was doing and why I was doing it.  Something about doing it because I freakin' wanted to do it.  I'm not trying to be another smiling face trying to get attention; instead, I'm trying to do some good.
 
-But also, I've aged out of the system at 67 and kinda "voluntired."  Retirement + social security *almost* gets it, but not exactly the lifestyle I want for as long as I estimate I'll want it (all my relatives died in their 90's). Toys are expensive, and I still want them.
+But also, I've aged out of the system at 67 and kinda "voluntired."  Retirement + social security *almost* gets it, but my wife has a more difficult heart condition, while all my relatives all live past 90.
 
 So I wouldn't mind getting a lesser-salary job to make up the gap, doing things that I've already been doing for five decades.  Kinda like getting senior-level experience for the price of a junior.  I'm gonna do it anyway, but I'd like to get paid for it.  Please keep that in mind.
 
