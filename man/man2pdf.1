@@ -1,0 +1,46 @@
+.TH MAN2PDF 1 "2026-05-15" "User Commands" "CLI-Improved Manual"
+.SH NAME
+man2pdf \- compile raw roff manual pages into high-fidelity PDFs
+.SH SYNOPSIS
+.B man2pdf
+.I <path_to_manpage_file>
+.SH DESCRIPTION
+\fBman2pdf\fR is an automation utility that ingests a raw UNIX manual source 
+file (\fBroff\fR format) and compiles it into a universally accessible 
+PDF document. 
+.PP
+The tool automatically handles filename parsing, extracts the base utility name, 
+ensures the destination directory exists, and invokes the system compiler layout 
+engine to generate a pristine, cross-platform publication format matching classic 
+UNIX manual conventions.
+.SH THE SCRIPT
+This manual entry documents the following standalone shell script:
+.IP
+.nf
+#!/bin/bash
+if [[ -z "$1" ]]; then
+    echo "Usage: man2pdf <path_to_manpage_file>"
+    exit 1
+fi
+MAN_FILE="$1"
+FILENAME=$(basename "$MAN_FILE")
+BASE_NAME="${FILENAME%.*}"
+mkdir -p man-pdf
+groff -man -Tpdf "$MAN_FILE" > "man-pdf/\${BASE_NAME}.pdf"
+.fi
+.SH DEPENDENCIES
+This script relies directly on the \fBgroff\fR document formatting system. 
+It must be installed and available in the current environment's \fB$PATH\fR.
+.TP
+\fBChecking for Groff:\fR
+You can verify its presence using your refined visibility tool:
+.I which groff
+.TP
+\fBMacOS Installation:\fR
+If missing on a Mac environment, install it via Homebrew:
+.I brew install groff
+.SH DIAGNOSTICS
+Returns 0 on successful compilation. Returns 1 if no input file is specified, 
+or if the underlying \fBgroff\fR compiler encounters an execution error.
+.SH AUTHOR
+William Orian Wear (Bill Wear)
