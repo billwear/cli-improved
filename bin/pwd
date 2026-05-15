@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# to make this work, add the following alias to your .bashrc file:
+#   alias pwd='/path/to/your/script/pwd'
+# then ensure that '/path/to/script/' is first in the $PATH
 
 DASHLPATH=$(pwd -L)
 DASHPPATH=$(pwd -P)
