@@ -1,0 +1,43 @@
+.TH CLEAR 1 "2026-05-15" "User Commands" "CLI-Improved Manual"
+.SH NAME
+clear \- clear the terminal screen and purge scrollback buffer
+.SH SYNOPSIS
+.B clear
+.SH DESCRIPTION
+A high-fidelity replacement for the standard \fBclear\fR utility.
+.PP
+Standard \fBclear\fR only moves the terminal cursor to the top line of the 
+window, leaving historical command output intact within the scrollback buffer. 
+This refined version visually clears the screen and immediately executes hardware-level 
+ANSI escape sequences to flush the terminal emulator's scrollback memory entirely.
+.SH THE FUNCTION
+This manual entry documents the following shell function and alias configuration:
+.IP
+.nf
+clear() {
+    /usr/bin/clear
+    printf '\\033c\\033[3J'
+}
+alias cls='clear'
+.fi
+.SH ESCAPE SEQUENCES
+The tool relies on the following low-level terminal controls via \fBprintf\fR:
+.TP
+\fB\\033c\fR
+Resets the terminal device state to its default settings.
+.TP
+\fB\\033[3J\fR
+Purges the entire visible and invisible scrollback history from the host terminal.
+.SH ADVANTAGES
+.IP \(bu 3
+\fBCognitive Reset:\fR Guarantees a truly blank canvas when shifting contexts, 
+preventing accidental scrolling into stale data.
+.IP \(bu 3
+\fBError Tolerance:\fR Intercepts the Windows-style \fBcls\fR command to maintain 
+workflow velocity across heterogeneous environments.
+.SH INSTALLATION
+Add the function and alias directly to your \fB.bashrc\fR or \fB.functions\fR file. 
+Because it is loaded as a shell function, it naturally shadows the standard 
+binary located at \fB/usr/bin/clear\fR.
+.SH AUTHOR
+William Orian Wear (Bill Wear)
