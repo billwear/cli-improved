@@ -1,0 +1,9 @@
+#!/bin/bash
+
+DASHLPATH=$(pwd -L)
+DASHPPATH=$(pwd -P)
+if [[ $DASHLPATH != $DASHPPATH ]]; then 
+  echo $DASHLPATH "=>" $DASHPPATH
+else
+  /bin/pwd
+fi
