@@ -1,0 +1,46 @@
+.TH CALENDAR 1 "2026-05-15" "User Commands" "CLI-Improved Manual"
+.SH NAME
+calendar \- list today's reminders
+.SH SYNOPSIS
+.B calendar
+.SH DESCRIPTION
+A simple, four-line approximation of the core features of the BSD calendar utility.
+.PP
+The code for calendar is very difficult to compile on modern hardware, due to antiquated libraries.  While not as fully-featured as the original, it gets the job done, and adds one glaring omission from the original.
+.SH THE FUNCTION
+This manual entry documents the following shellscript and alias configuration:
+.IP
+.nf
+.fi
+#!/bin/zsh
+date '+%A, %B %e, %Y'
+echo '---'
+todate=$(date +"%b %e|%m/%d|%m-%d|%a|%A")
+grep -E "^($todate)|^daily" ~/.calendar | cut -s -f 2-
+
+# for .zshrc
+alias calendar='$HOME/bin/calendar' # (or your private executable path)
+.SH CALENDAR FILE
+A file named \fB.calendar\fR must be present in your home directory.  Every line consists of a 
+date indicator, followed by a tab and a reminder message.  Date indicators may consist of the following:
+.TP
+\fBMay 16\fR
+A capitalized month name followed by the day of that month.
+.TP
+\fB05/16\fR
+A month/day pair (American style).
+.TP
+\fB05-16\fR
+A month-day pair (also American style).
+.TP
+\fBThursday\fR
+A spelled out day name.
+.TP
+\fBThu\fR
+A three-letter day name abbreviation.
+\fbdaily\fR
+The lowercase word "daily." Items marked with this will appear every day.
+.SH INSTALLATION
+Add the alias directly to your \fB.zshrc\fR file, and copy the shellscript to your personal executable path.
+.SH AUTHOR
+William Orian Wear (Bill Wear)
