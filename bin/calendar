@@ -1,6 +1,0 @@
-#!/bin/zsh
-date '+%A, %B %e, %Y'
-echo '---'
-todate=$(date +"%b %e|%m/%d|%m-%d|%a|%A")
-grep -E "^($todate)|^daily" ~/.calendar | cut -s -f 2-
-
