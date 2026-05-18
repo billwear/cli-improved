@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+# Be sure to set "alias comm='/path/to/your/executables/comm" in your .bashrc
+
+# Ensure two files are passed
+if [[ $# -ne 2 ]]; then
+    echo "Usage: comm <file1> <file2>"
+    exit 1
+fi
+
+FILE1="$1"
+FILE2="$2"
+
+# Check if file1 is sorted lexically
+sort -C "$FILE1" 2>/dev/null
+SORTED1=$?
+
+# Check if file2 is sorted lexically
+sort -C "$FILE2" 2>/dev/null
+SORTED2=$?
+
+# If both are sorted, run standard comm. Otherwise, sort on the fly.
+if [[ $SORTED1 -eq 0 && $SORTED2 -eq 0 ]]; then
+    /usr/bin/comm "$FILE1" "$FILE2"
+elif [[ $SORTED1 -ne 0 && $SORTED2 -eq 0 ]]; then
+    /usr/bin/comm <(sort "$FILE1") "$FILE2"
+elif [[ $SORTED1 -eq 0 && $SORTED2 -ne 0 ]]; then
+    /usr/bin/comm "$FILE1" <(sort "$FILE2")
+else
+    /usr/bin/comm <(sort "$FILE1") <(sort "$FILE2")
+fi

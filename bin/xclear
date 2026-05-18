@@ -1,0 +1,4 @@
+#!/bin/sh
+
+clear
+printf '\033c\033[3J'
