@@ -1,0 +1,106 @@
+.TH HLS 1 "September 2026" "HLS Project" "User Commands"
+.SH NAME
+hls \- modern systems programmer's directory browser and APUE reference tool
+.SH SYNOPSIS
+.B hls
+[\fB\-aFlrRnStHM@GsijOI\fR]
+[\fB\-E\fR \fIregex\fR]
+[\fB\-h\fR]
+[\fB\-m\fR]
+[\fIfile ...\fR]
+.SH DESCRIPTION
+.B hls
+inspects POSIX file metadata, integrates low-level filesystem telemetry, interrogates Git status caches, and displays tree layouts and file contents. It is designed to replace external pipeline dependencies (like grep, awk, or stat) by baking standard systems-programming necessities directly into the binary.
+.PP
+If no \fIfile\fR is specified, the current directory is used. By default, it sorts alphabetically and presents output in a clean columnar layout unless specified otherwise.
+.SH OPTIONS
+.TP
+.B \-a
+Include dotfiles (hidden files starting with a period) in listings.
+.TP
+.B \-E \fIregex\fR
+Apply an internal POSIX extended regular expression filter to file names. Bypasses the need to pipe output through \fBgrep\fR.
+.TP
+.B \-F
+Classify entries by appending a trailing symbol to the filename indicating its file type: '/' for directories, '*' for executables, '@' for symbolic links, '|' for FIFOs, and '=' for sockets.
+.TP
+.B \-G
+Query the working tree status via asynchronous Git pipeline batching. Prepends a two-character Git status code (e.g., 'M ', '??') to files within a Git repository.
+.TP
+.B \-h
+Print a concise usage summary and exit.
+.TP
+.B \-H
+Scale sizes using human-readable binary suffixes (Base-1024: B, K, M, G, T, P) rather than exact byte counts.
+.TP
+.B \-i
+Print the raw inode index number (\fBst_ino\fR) for each file. Tracks hardlinks gracefully when used with \fB\-l\fR.
+.TP
+.B \-I
+Format timestamps explicitly in strict ISO-8601 layout (YYYY-MM-DD HH:MM:SS) rather than the localized human-readable time format.
+.TP
+.B \-j
+Emit output as a structured JSON array. This ignores standard rendering and coloring flags, dumping the entire directory structure into a format optimized for toolchain consumption (preserving boolean types for symlinks and integers for byte counts).
+.TP
+.B \-l
+Render the long multi-column record format. Displays Git status, raw permissions, link counts, owners, groups, sizes (or major/minor device numbers for character/block devices), modification times, and names.
+.TP
+.B \-m
+Output the embedded raw manual page to standard output.
+.TP
+.B \-M
+Sniff the initial magic bytes of files to determine and print binary/text signatures (e.g., "ELF binary", "Mach-O 64-bit", "ZIP archive"). Forces \fB\-l\fR.
+.TP
+.B \-n
+Display numeric UIDs and GIDs directly from the \fBstat\fR struct, bypassing \fI/etc/passwd\fR and \fI/etc/group\fR resolution. Forces \fB\-l\fR.
+.TP
+.B \-O
+Render raw octal mode integers (e.g., 0755, 0644) alongside standard permissions in long listings. Forces \fB\-l\fR.
+.TP
+.B \-r
+Invert the active sorting comparison (reverse alphabetical, oldest first, or smallest first).
+.TP
+.B \-R
+Recursively traverse and list subdirectories.
+.TP
+.B \-s
+Compute disk block allocation efficiency. Flags sparse storage percentages if the allocated bytes are less than the logical file size, or prints the 1K-block footprint.
+.TP
+.B \-S
+Sort output by logical file size, descending (largest first).
+.TP
+.B \-t
+Sort output by modification timestamp, descending (newest first).
+.TP
+.B \-T
+Render a hierarchical visual tree graph. Detects and prevents infinite cyclic loops across symbolic links and directories.
+.TP
+.B \-@
+Enumerate extended filesystem attributes (macOS and Linux \fBxattrs\fR). Prints attribute keys nested beneath the file in long format.
+.SH EXIT STATUS
+The \fBhls\fR utility exits 0 on success, and >0 if an error occurs (such as invalid flags, inaccessible directories, or malformed regex).
+.SH EXAMPLES
+.TP
+List all files in long format, including dotfiles and octal permissions:
+.B hls \-laO
+.TP
+Filter for C source and header files, rendering the output as a JSON array:
+.B hls \-j \-E "\\.[ch]$"
+.TP
+View a full recursive tree with human-readable sizes and Git status badges:
+.B hls \-RTHG
+.TP
+Inspect a suspicious binary to view its system allocation footprint and magic bytes:
+.B hls \-lsM ./unknown_binary
+.SH FILES
+.I .git/
+(Optional) Used for querying working tree modifications when the \fB\-G\fR flag is active.
+.SH SEE ALSO
+.BR ls (1),
+.BR stat (2),
+.BR lstat (2),
+.BR xattr (1)
+.SH AUTHOR
+Written by Bill Wear. 
+.PP
+Source code, issue tracking, and contributions are managed via the \fBhackers-cli\fR repository under "billwear" on GitHub.
