@@ -1,0 +1,217 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+#include <ctype.h>
+#include <stdbool.h>
+
+/* Helper to convert a string to lowercase for case-insensitive matching */
+void str_tolower(char *str) {
+    for (; *str; ++str) {
+        *str = tolower((unsigned char)*str);
+    }
+}
+
+/* Helper to trim trailing whitespace */
+void trim_trailing(char *str) {
+    char *end = str + strlen(str) - 1;
+    while (end > str && isspace((unsigned char)*end)) {
+        *end = '\0';
+        end--;
+    }
+}
+
+/* Helper to parse -t string in [[[cc]yy]mm]dd format and override target date */
+bool set_target_date(const char *date_str, struct tm *target) {
+    int len = strlen(date_str);
+    int cc = -1, yy = -1, mm = -1, dd = -1;
+
+    for (int i = 0; i < len; i++) {
+        if (!isdigit((unsigned char)date_str[i])) {
+            return false;
+        }
+    }
+
+    if (len == 2) {
+        sscanf(date_str, "%2d", &dd);
+    } else if (len == 4) {
+        sscanf(date_str, "%2d%2d", &mm, &dd);
+    } else if (len == 6) {
+        sscanf(date_str, "%2d%2d%2d", &yy, &mm, &dd);
+    } else if (len == 8) {
+        sscanf(date_str, "%2d%2d%2d%2d", &cc, &yy, &mm, &dd);
+    } else {
+        return false;
+    }
+
+    target->tm_mday = dd;
+    if (mm != -1) target->tm_mon = mm - 1;
+    if (yy != -1) {
+        if (cc != -1) {
+            target->tm_year = (cc * 100 + yy) - 1900;
+        } else {
+            if (yy >= 69) target->tm_year = yy;
+            else target->tm_year = yy + 100;
+        }
+    }
+
+    target->tm_isdst = -1; 
+    if (mktime(target) == -1) return false;
+    return true;
+}
+
+/* Core matching logic for a specific single day */
+bool matches_today(char *date_str, struct tm *target_day) {
+    trim_trailing(date_str);
+    char lower_date[64];
+    strncpy(lower_date, date_str, sizeof(lower_date) - 1);
+    lower_date[sizeof(lower_date) - 1] = '\0';
+    str_tolower(lower_date);
+
+    // 1. Custom Extension: Daily
+    if (strcmp(lower_date, "* *") == 0) return true;
+
+    // 2. Custom Extension: Weekdays & Weekends
+    if (strcmp(lower_date, "m-f") == 0) return (target_day->tm_wday >= 1 && target_day->tm_wday <= 5);
+    if (strcmp(lower_date, "sasun") == 0) return (target_day->tm_wday == 0 || target_day->tm_wday == 6);
+
+    int mon, day;
+    char str_buf[20];
+    const char *months[] = {"jan", "feb", "mar", "apr", "may", "jun",
+                            "jul", "aug", "sep", "oct", "nov", "dec"};
+    const char *days[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
+
+    // 3. Wildcard Month (* 15)
+    if (sscanf(lower_date, "* %d", &day) == 1) {
+        return (day == target_day->tm_mday);
+    }
+
+    // 4. Standard BSD Numeric (MM/DD or M/D)
+    if (sscanf(lower_date, "%d/%d", &mon, &day) == 2) {
+        return (mon - 1 == target_day->tm_mon && day == target_day->tm_mday);
+    }
+
+    // 5. Reversed Text (15 Jun or 15 June)
+    if (sscanf(lower_date, "%d %19s", &day, str_buf) == 2) {
+        for (int i = 0; i < 12; i++) {
+            if (strncmp(str_buf, months[i], 3) == 0) {
+                return (i == target_day->tm_mon && day == target_day->tm_mday);
+            }
+        }
+    }
+
+    // 6. Standard Text (Jun 15 or June 15)
+    if (sscanf(lower_date, "%19s %d", str_buf, &day) == 2) {
+        for (int i = 0; i < 12; i++) {
+            if (strncmp(str_buf, months[i], 3) == 0) {
+                return (i == target_day->tm_mon && day == target_day->tm_mday);
+            }
+        }
+    }
+
+    // 7. Single Word (Weekday or Month)
+    if (sscanf(lower_date, "%19s", str_buf) == 1) {
+        // Check if it's a weekday (Thu, Thursday)
+        for (int i = 0; i < 7; i++) {
+            if (strncmp(str_buf, days[i], 3) == 0) {
+                return (i == target_day->tm_wday);
+            }
+        }
+        
+        // Check if it's a month (June -> means June 1st)
+        for (int i = 0; i < 12; i++) {
+            if (strncmp(str_buf, months[i], 3) == 0) {
+                return (i == target_day->tm_mon && target_day->tm_mday == 1);
+            }
+        }
+    }
+
+    return false;
+}
+
+/* Loop through the lookbehind and lookahead window. 
+   Returns the tm_wday (0-6) of the first matching day, or -1 if no match. */
+int find_matching_wday(char *date_str, struct tm *base_target, int lookbehind_days, int lookahead_days) {
+    for (int i = -lookbehind_days; i <= lookahead_days; i++) {
+        struct tm day_to_check = *base_target;
+        day_to_check.tm_mday += i;
+        day_to_check.tm_isdst = -1;
+        
+        if (mktime(&day_to_check) != -1) {
+            if (matches_today(date_str, &day_to_check)) {
+                return day_to_check.tm_wday;
+            }
+        }
+    }
+    return -1;
+}
+
+int main(int argc, char *argv[]) {
+    bool print_rule = false;
+    bool print_wday = false;
+    int lookahead_days = 0;
+    int lookbehind_days = 0;
+    const char *filename = "calendar";
+    const char *target_date_str = NULL;
+    
+    const char *day_names[] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-r") == 0) {
+            print_rule = true;
+        } else if (strcmp(argv[i], "-w") == 0) {
+            print_wday = true;
+        } else if (strcmp(argv[i], "-t") == 0) {
+            if (i + 1 < argc) target_date_str = argv[++i];
+            else return 1;
+        } else if (strcmp(argv[i], "-A") == 0) {
+            if (i + 1 < argc) lookahead_days = atoi(argv[++i]);
+            else return 1;
+        } else if (strcmp(argv[i], "-B") == 0) {
+            if (i + 1 < argc) lookbehind_days = atoi(argv[++i]);
+            else return 1;
+        } else {
+            filename = argv[i];
+        }
+    }
+
+    FILE *file = fopen(filename, "r");
+    if (!file) return 1;
+
+    time_t t = time(NULL);
+    struct tm *target = localtime(&t);
+
+    if (target_date_str) {
+        if (!set_target_date(target_date_str, target)) {
+            fclose(file);
+            return 1;
+        }
+    }
+
+    char buffer[1024];
+    while (fgets(buffer, sizeof(buffer), file)) {
+        if (buffer[0] == '\n' || buffer[0] == '#') continue;
+
+        char *tab_pos = strchr(buffer, '\t');
+        if (tab_pos) {
+            *tab_pos = '\0';
+            
+            int matched_wday = find_matching_wday(buffer, target, lookbehind_days, lookahead_days);
+            
+            if (matched_wday != -1) {
+                if (print_wday) printf("%s ", day_names[matched_wday]);
+                if (print_rule) {
+                    *tab_pos = '\t';
+                    printf("%s", buffer);
+                } else {
+                    printf("%s", tab_pos + 1);
+                }
+            } else {
+                *tab_pos = '\t';
+            }
+        }
+    }
+
+    fclose(file);
+    return 0;
+}

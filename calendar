@@ -1,0 +1,23 @@
+# 1. Custom Macros (Daily, Weekday, Weekend)
+* *	Check wttr.in for Mississippi weather @daily
+M-F	Write 500 words for Ordinary Competence @writing
+SaSun	Sewing project (denim sling bags) @crafts
+
+# 2. Standard Numeric (MM/DD and M/D)
+09/13	Back up Emacs org-mode files @admin
+9/14	Review C utilities on GitHub @dev
+
+# 3. Text Standard & Reversed
+Sep 15	Publish Substack essay @writing
+16 Sep	Draft chapter for Anchoring Kites @writing
+
+# 4. Single Words (Weekday & Month 1st)
+Sunday	Watch Hogan's Heroes with Sharan @leisure
+Oct	Pay Free Software Foundation dues @admin
+
+# 5. Wildcard Month (The 13th of every month)
+* 13	Monthly Tailscale network check @admin
+
+# 6. Age Macros (YYYY-MM-DD and YYYY/MM/DD)
+1959-01-16	Bill's Birthday (Turning %AGE% years old)
+2025/09/14	Eton 750 radio sold (%AGE% year ago) @radio
